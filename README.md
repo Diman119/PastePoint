@@ -9,3 +9,6 @@
 - Лента с недавними публичными пастами
 - Добавление комментариев к пастам
 - Добавление паст в избранное, просмотр списка избранных
+
+## Дизайн сайта
+https://www.figma.com/file/Lkb3GrXrsP3YvKHE2wKcCd/PastePoint?type=design&mode=design&t=35bvbVn6drUPnYeJ-1
