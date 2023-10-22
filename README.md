@@ -12,3 +12,6 @@
 
 ## Дизайн сайта
 https://www.figma.com/file/Lkb3GrXrsP3YvKHE2wKcCd/PastePoint?type=design&mode=design&t=35bvbVn6drUPnYeJ-1
+
+## Скриншот дизайна
+![](design_screenshot.png)
