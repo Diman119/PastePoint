@@ -1,13 +1,19 @@
-import {useState, useRef} from "react";
+import {useState} from "react";
 import {useNavigate} from "react-router-dom"
 import hljs from 'highlight.js';
 
 import "./CreatePaste.css";
 
-let languages = hljs.listLanguages();
-let languageNames = languages.map((lang) => hljs.getLanguage(lang).name);
-languages = ["none", "auto"].concat(languages);
-languageNames = ["Нет", "Автоматически"].concat(languageNames);
+const languages = ["none", "auto", ...hljs.listLanguages()];
+const languageNames = languages.map((lang) => {
+  if (lang === "none") {
+    return "Нет";
+  } else if (lang === "auto") {
+    return "Автоматически";
+  } else {
+    return hljs.getLanguage(lang).name;
+  }
+});
 
 function PasteInput({paste_data}) {
   const navigate = useNavigate();
@@ -15,11 +21,11 @@ function PasteInput({paste_data}) {
   const publishPaste = function () {
     // TODO: send to server
 
-    console.log(paste_data.current.name);
-    console.log(paste_data.current.content);
-    console.log(paste_data.current.language);
-    console.log(paste_data.current.access);
-    console.log(paste_data.current.password);
+    console.log(paste_data.name);
+    console.log(paste_data.content);
+    console.log(paste_data.language);
+    console.log(paste_data.access);
+    console.log(paste_data.password);
 
     console.log("publish");
 
@@ -35,7 +41,7 @@ function PasteInput({paste_data}) {
                 id="paste-input"
                 placeholder="Вставьте текст&hellip;"
                 spellCheck="false"
-                onChange={(e) => paste_data.current.content = e.target.value} />
+                onChange={(e) => paste_data.content = e.target.value} />
       <button className="input-element" onClick={publishPaste}>Опубликовать</button>
     </div>
   );
@@ -64,39 +70,39 @@ function Settings({paste_data}) {
 
       <div className="subtitle">Название</div>
       <input className="input-element" id="name-input"
-        onChange={(e) => paste_data.current.name = e.target.value} />
+        onChange={(e) => paste_data.name = e.target.value} />
 
       <div className="subtitle">Язык для подсветки</div>
       <Dropdown id="language-selector"
-                defaultVal={paste_data.current.language}
+                defaultVal={paste_data.language}
                 values={languages}
                 names={languageNames}
-                onChange={(e) => paste_data.current.language = e.target.value} />
+                onChange={(e) => paste_data.language = e.target.value} />
 
       <div className="subtitle">Доступ</div>
       <Dropdown id="access-selector"
-                defaultVal={paste_data.current.access}
+                defaultVal={paste_data.access}
                 values={["public", "private", "password"]}
                 names={["Публичный", "Только для вас", "С паролем"]}
                 onChange={(e) => {
                   setAccessMode(e.target.value);
-                  paste_data.current.access = e.target.value;
+                  paste_data.access = e.target.value;
                 }} />
 
       {accessMode === "password" ?
         <div className="subtitle">Пароль</div> : null}
       {accessMode === "password" ?
         <input className="input-element" id="password-input"
-          onChange={(e) => paste_data.current.password = e.target.value} /> : null}
+          onChange={(e) => paste_data.password = e.target.value} /> : null}
     </div>
   );
 }
 
 export function CreatePaste() {
-  const paste_data = useRef({
+  const paste_data = {
     "access": "public",
     "language": "auto"
-  })
+  };
 
   return (
     <div className="content">
