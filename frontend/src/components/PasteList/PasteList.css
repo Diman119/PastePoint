@@ -1,0 +1,49 @@
+.paste-list {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.paste-list-header {
+    display: flex;
+}
+
+.paste-list-header > div:nth-child(1) {
+    flex-grow: 1;
+}
+
+.paste-list-header > div:nth-child(2) {
+    width: 20%;
+}
+
+.paste-list-header > div:nth-child(3) {
+    width: 20%;
+}
+
+.paste-entry {
+    text-decoration: none;
+}
+
+.paste-entry > button {
+    width: 100% !important;
+    height: auto !important;
+    padding: 6px !important;
+    display: flex !important;
+}
+
+.paste-entry > button > div {
+    text-align: start;
+}
+
+.paste-entry > button > div:nth-child(1) {
+    flex-grow: 1;
+}
+
+.paste-entry > button > div:nth-child(2) {
+    width: 20%;
+}
+
+.paste-entry > button > div:nth-child(3) {
+    width: 20%;
+}

@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "./components/Header/Header";
 import { CreatePaste } from "./components/CreatePaste/CreatePaste";
+import { ViewPaste } from "./components/ViewPaste/ViewPaste";
+import { PasteList } from "./components/PasteList/PasteList";
 
 import "./App.css";
 
@@ -10,10 +12,10 @@ function App() {
       <Header />
       <main className="main">
         <Routes>
-          <Route path="/" element={<CreatePaste />} />
-          <Route path="/my" element={<div>Мои пасты</div>} />
-          <Route path="/favorites" element={<div>Избранное</div>} />
-          <Route path="/view/:id" element={<div>Просмотр пасты</div>} />
+          <Route path="/" Component={CreatePaste} />
+          <Route path="/my" Component={PasteList} />
+          <Route path="/favorites" Component={PasteList} />
+          <Route path="/view/:id" Component={ViewPaste} />
         </Routes>
       </main>
     </BrowserRouter>
