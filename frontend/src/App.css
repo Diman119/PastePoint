@@ -1,5 +1,5 @@
 html {
-  background-color: #DADADA;
+  background-color: #e0e0e0;
 }
 
 .content {
@@ -9,5 +9,53 @@ html {
   left: 0;
   bottom: 0;
   right: 0;
+  padding-top: 10px;
   justify-content: flex-end;
+}
+
+.panel {
+  background-color: #FFFFFF;
+  margin: 10px;
+  margin-left: 0;
+  margin-top: 0;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 4px #00000040;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.subtitle {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.input-element {
+  border: 1.5px solid black;
+  outline: none;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.input-element:active {
+  background-color: #c0c0c0;
+}
+
+input[type="checkbox"] {
+  margin-right: 4px;
+  cursor: pointer;
+}
+
+.content button {
+  cursor: pointer;
+  width: 150px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 8px;
+  padding: 2px;
+  align-self: center;
 }
