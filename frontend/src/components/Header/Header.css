@@ -15,12 +15,14 @@
 }
 
 .account {
-  background-color: #00000000;
+  color: black;
+  background-color: transparent;
   border: none;
   outline: none;
   cursor: pointer;
   font-size: 18px;
   font-weight: bold;
+  text-decoration: underline;
   margin-left: 10px;
   margin-right: 10px;
 }

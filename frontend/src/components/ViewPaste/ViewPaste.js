@@ -1,37 +1,17 @@
-import {useState} from "react";
-import {useParams} from "react-router-dom"
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"
 import SyntaxHighlighter from "react-syntax-highlighter"
 import { vs } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import { ApiService } from "../../services/ApiService";
 
 import "./ViewPaste.css";
 
-function PasteRenderer({id}) {
+function PasteRenderer({content}) {
   const [hlOn, setHlOn] = useState(true);
   const [copyButtonText, setCopyButtonText] = useState("Копировать");
 
-
-
-  const pasteText = `from math import sqrt
-
-c = float(input('Screen diagonal: '))
-x = int(input('Horizontal resolution: '))
-y = int(input('Vertical resolution: '))
-
-r = y / x
-a = sqrt((c * c) / (1 + (r * r)))
-ppi = x / a
-a *= 2.54
-b = r * a
-
-print(f'Screen size: {a: .2f} x {b: .2f} cm Ratio: {r if r > 1 else 1 / r: .3f} Density: {ppi: .2f} ppi')
-  `
-  const hlLang = "python";
-
-
-
-
   const copyToClipboard = function () {
-    navigator.clipboard.writeText(pasteText);
+    navigator.clipboard.writeText(content.content);
     setCopyButtonText("Скопировано");
   }
 
@@ -40,7 +20,7 @@ print(f'Screen size: {a: .2f} x {b: .2f} cm Ratio: {r if r > 1 else 1 / r: .3f} 
       <div className="paste-input">
         <div className="paste-input-header">
           <div className="title">
-            Paste with id {id}
+            {content.name}
           </div>
           <label className="subtitle">
             <input type="checkbox" id="syntax-highlight" defaultChecked
@@ -48,8 +28,8 @@ print(f'Screen size: {a: .2f} x {b: .2f} cm Ratio: {r if r > 1 else 1 / r: .3f} 
             Подсветка синтаксиса
           </label>
         </div>
-        <SyntaxHighlighter className="paste-content" language={hlOn ? hlLang : "plaintext"} style={vs}>
-          {pasteText}
+        <SyntaxHighlighter className="paste-content" language={hlOn ? content.language : "plaintext"} style={vs}>
+          {content.content}
         </SyntaxHighlighter>
         <button className="input-element" onClick={copyToClipboard}>{copyButtonText}</button>
       </div>
@@ -57,68 +37,113 @@ print(f'Screen size: {a: .2f} x {b: .2f} cm Ratio: {r if r > 1 else 1 / r: .3f} 
   );
 }
 
-function PasteInfo() {
-  const author = "User_name";
-  const date = "15.01.2038";
-  const favorited = false;
+function PasteInfo({info}) {
+  const [favoriteIds, setFavoriteIds] = useState(null);
+  const isAuth = Boolean(window.localStorage.getItem("access"));
+  const favorited = () => favoriteIds !== null && favoriteIds.includes(+info.id);
 
+  useEffect(() => {
+    (async () => {
+      const data = await ApiService('current_user');
+      setFavoriteIds(data.favorites);
+    })();
+  }, []);
 
+  const sendFavorite = async function(e) {
+    if (favoriteIds === null) {
+      return;
+    }
 
+    var newFavoriteIds = [...favoriteIds];
+    if (e.target.checked != favorited()) {
+      if (e.target.checked) {
+        newFavoriteIds.push(+info.id);
+      } else {
+        newFavoriteIds.splice(newFavoriteIds.indexOf(+info.id), 1);
+        console.log(newFavoriteIds);
+        console.log(favoriteIds);
+      }
+    }
 
+    await ApiService('current_user', {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ favorites: newFavoriteIds }),
+    });
 
-  const setFavorited = function(e) {/* send to server... */};
+    setFavoriteIds(newFavoriteIds);
+  }
 
   return (
     <div className="paste-info-stack" style={{width: "25%"}}>
       <div className="panel">
         <div className="paste-info-line">
           <div className="title">Автор</div>
-          <div className="subtitle">{author}</div>
+          <div className="subtitle">{info.author}</div>
         </div>
         <div className="paste-info-line">
           <div className="title">Дата</div>
-          <div className="subtitle">{date}</div>
+          <div className="subtitle">{info.creation_dt}</div>
         </div>
       </div>
-      <div className="panel">
+      {isAuth && <div className="panel">
         <div className="paste-info-line">
           <div className="title">Добавить в избранное</div>
           <label htmlFor="favorite-checkbox">
-            <input type="checkbox" id="favorite-checkbox" defaultChecked={favorited}
-              onChange={setFavorited} />
+            <input type="checkbox" id="favorite-checkbox" checked={favorited()}
+              onChange={sendFavorite} />
             <div className="favorite-icon"></div>
           </label>
         </div>
-      </div>
-      <CommentSection />
+      </div>}
+      <CommentSection info={info} />
     </div>
   );
 }
 
-function CommentSection() {
-  const publishComment = function () {
-    console.log(commentInputText);
+function CommentSection({info}) {
+  const isAuth = Boolean(window.localStorage.getItem("access"));
+
+  const publishComment = async function () {
+    if (commentInputText.length === 0) {
+      return;
+    }
+
+    await ApiService("create_comment/", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ paste: info.id, text: commentInputText }),
+    });
+
+    window.location.reload();
   }
 
   var commentInputText = "";
 
   return (
     <div className="panel" id="comment-panel">
-      <div className="comment-section">
-        <div className="title">Комментарии</div>
-        <Comment userName={"UserA"} commentText={"very informative hkjfbvlh ekhfvbkefbv kjfhgvhf\nhjsdbvjhsdbvh uidgfvhbdv jhdfgvjhdbfv"} />
-        <Comment userName={"UserB"} commentText={"very informative hkjfbvlh ekhfvbkefbv kjfhgvhf\nhjsdbvjhsdbvh uidgfvhbdv jhdfgvjhdbfv"} />
-        <Comment userName={"UserB"} commentText={"very informative hkjfbvlh ekhfvbkefbv kjfhgvhf\nhjsdbvjhsdbvh uidgfvhbdv jhdfgvjhdbfv"} />
-        <Comment userName={"UserB"} commentText={"very informative hkjfbvlh ekhfvbkefbv kjfhgvhf\nhjsdbvjhsdbvh uidgfvhbdv jhdfgvjhdbfv"} />
-      </div>
-      <div className="add-comment">
+      {info.comment_set.length > 0 ? (
+        <div className="comment-section">
+          <div className="title">Комментарии</div>
+          {info.comment_set.map((c) => (
+            <Comment key={c.id} userName={c.author.username} commentText={c.text} />
+          ))}
+        </div>
+      ) : (
+        <div className="title">Пока нет комментариев…</div>
+      )}
+      {isAuth && <div className="add-comment">
         <div className="title">Ваш комментарий:</div>
         <textarea className="input-element"
                   id="comment-input"
-                  placeholder="Введите текст&hellip;"
+                  placeholder="Введите текст…"
                   onChange={(e) => commentInputText = e.target.value} />
         <button className="input-element" onClick={publishComment}>Опубликовать</button>
-      </div>
+      </div>}
     </div>
   );
 }
@@ -134,10 +159,43 @@ function Comment({userName, commentText}) {
 
 export function ViewPaste() {
   const params = useParams();
+
+  const [pasteContent, setPasteContent] = useState({
+    name: "Загрузка…",
+    content: "",
+    language: "plaintext"
+  })
+
+  const [pasteInfo, setPasteInfo] = useState({
+    id: params.id,
+    author: "Загрузка…",
+    creation_dt: "Загрузка…",
+    comment_set: []
+  })
+
+  useEffect(() => {
+    (async () => {
+      const data = await ApiService(`paste/${params.id}`);
+
+      setPasteContent({
+        name: data.name,
+        content: data.content,
+        language: data.language
+      });
+
+      setPasteInfo({
+        id: params.id,
+        author: data.author.username,
+        creation_dt: data.creation_dt,
+        comment_set: data.comment_set
+      })
+    })();
+  }, []);
+
   return (
     <div className="content">
-      <PasteRenderer id={params.id} />
-      <PasteInfo />
+      <PasteRenderer content={pasteContent} />
+      <PasteInfo info={pasteInfo} />
     </div>
   );
 }
