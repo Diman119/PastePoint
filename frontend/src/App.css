@@ -52,10 +52,24 @@ input[type="checkbox"] {
 
 .content button {
   cursor: pointer;
-  width: 150px;
+  min-width: 150px;
   font-size: 14px;
   font-weight: bold;
   margin-top: 8px;
-  padding: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 12px;
+  padding-right: 12px;
   align-self: center;
+}
+
+.no-auth {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  font-size: 26px;
+  text-align: center;
+  padding-top: 20px;
 }

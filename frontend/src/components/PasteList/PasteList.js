@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ApiService } from "../../services/ApiService";
 
 import "./PasteList.css";
 
@@ -14,7 +16,29 @@ function PasteEntry({pasteId, name, author, date}) {
   );
 }
 
-export function PasteList() {
+export function PasteList({endpoint}) {
+  const [pastes, setPastes] = useState([]);
+  const isAuth = Boolean(window.localStorage.getItem("access"));
+
+  useEffect(() => {
+    if (!isAuth) {
+      return;
+    }
+
+    (async () => {
+      const data = await ApiService(endpoint);
+      console.log(data);
+      setPastes(data);
+    })();
+  }, [endpoint]);
+
+  if (!isAuth) {
+    return (
+      <div className="no-auth">
+        Войдите, чтобы просматривать свои подборки паст.
+      </div>
+    )
+  }
 
   return (
     <div className="content" style={{justifyContent: "center"}}>
@@ -25,22 +49,9 @@ export function PasteList() {
             <div className="title">Автор</div>
             <div className="title">Дата</div>
           </div>
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
-          <PasteEntry pasteId="234" name="sjdfbvsfbvlkjdfbsvlkdjfb" author="user_name" date="23.09.2077" />
+          {pastes.map((p) => (
+            <PasteEntry key={p.id} pasteId={p.id} name={p.name} author={p.author.username} date={p.creation_dt} />
+          ))}
         </div>
       </div>
     </div>

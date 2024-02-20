@@ -1,0 +1,17 @@
+.login-screen {
+    flex-direction: column;
+    height: 100%;
+}
+
+.login-screen > form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.login-screen > form > .subtitle {
+    margin-top: 12px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+}
